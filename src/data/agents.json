@@ -1,0 +1,128 @@
+[
+  {
+    "id": "lead-gen",
+    "name": "Lead Generation Agent",
+    "category": "Sales",
+    "description": "Scrapes, qualifies, and engages prospects across LinkedIn and email 24/7.",
+    "longDescription": "This autonomous outbound engine locates high-value prospects, runs hyper-personalized email campaigns, qualifies inbound leads, and books them directly onto your sales calendar. It learns your value proposition and matches it to prospect profiles dynamically.",
+    "icon": "Users",
+    "price": "$149/mo",
+    "rating": 4.9,
+    "features": [
+      "Auto-scrape LinkedIn profiles based on ICP parameters",
+      "Dynamic email personalization using social signals",
+      "Lead scoring and intent verification",
+      "Direct integration with Calendly, HubSpot, and CRM pipelines"
+    ],
+    "integrations": ["LinkedIn", "Hubspot", "n8n", "Google Sheets", "Gmail"],
+    "stats": "5.2x Higher Reply Rate"
+  },
+  {
+    "id": "marketing-pro",
+    "name": "Social Media Marketing Agent",
+    "category": "Marketing",
+    "description": "Writes, schedules, and optimizes viral content across Twitter, LinkedIn, and Threads.",
+    "longDescription": "An all-in-one social growth marketer that monitors industry trends, extracts insights, writes engaging threads and posts in your brand voice, schedules them for peak engagement times, and automatically replies to early comments to boost reach.",
+    "icon": "Megaphone",
+    "price": "$129/mo",
+    "rating": 4.8,
+    "features": [
+      "Trend analysis and automatic topic generation",
+      "Content optimization using viral Hook frameworks",
+      "Interactive reply automation and sentiment analysis",
+      "Monthly comprehensive analytics & growth insights"
+    ],
+    "integrations": ["Twitter API", "Buffer", "Supabase", "ChatGPT", "n8n"],
+    "stats": "240% Increase in Impressions"
+  },
+  {
+    "id": "whatsapp-support",
+    "name": "WhatsApp Support Agent",
+    "category": "Support",
+    "description": "Instantly resolves customer queries, processes returns, and recommends products.",
+    "longDescription": "Provide human-grade support directly in the world's most popular messaging app. This agent answers complex product questions, tracks shipping, initiates returns, and offers personalized up-sells, routing only critical tickets to your human support team.",
+    "icon": "MessageSquare",
+    "price": "$199/mo",
+    "rating": 4.9,
+    "features": [
+      "24/7 instant replies with context retention",
+      "Order lookups and live shipping tracking",
+      "Multi-lingual support for 45+ languages",
+      "Escalation hooks to Zendesk, Slack, or Intercom"
+    ],
+    "integrations": ["WhatsApp Business", "Supabase", "Shopify", "Stripe", "n8n"],
+    "stats": "84% First-Contact Resolution"
+  },
+  {
+    "id": "homework-checker",
+    "name": "Homework Checker Agent",
+    "category": "Education",
+    "description": "Scans assignments, gives constructive feedback, and tracks grades.",
+    "longDescription": "Designed for teachers and educational platforms, this agent analyzes uploaded documents or handwriting, matches them against answer sheets or open-ended rubrics, highlights conceptual errors, and provides detailed feedback and scoring in seconds.",
+    "icon": "FileCheck",
+    "price": "$79/mo",
+    "rating": 4.7,
+    "features": [
+      "High-accuracy OCR for handwritten assignment scanning",
+      "Step-by-step mathematical and logic verification",
+      "Personalized feedback summaries for students",
+      "Auto-export scores and notes to school portals"
+    ],
+    "integrations": ["Canvas LMS", "Google Workspace", "Supabase", "n8n"],
+    "stats": "92% Grading Time Saved"
+  },
+  {
+    "id": "doubt-solving-tutor",
+    "name": "Doubt-Solving AI Tutor",
+    "category": "Education",
+    "description": "Patient, 24/7 academic tutor explaining STEM concepts through interactive dialogues.",
+    "longDescription": "An adaptive tutor that explains complex concepts (physics, math, coding, chemistry) dynamically. Rather than just giving answers, it guides students using the Socratic method, generating visual aids and quizzes to verify comprehension.",
+    "icon": "GraduationCap",
+    "price": "$99/mo",
+    "rating": 4.9,
+    "features": [
+      "Socratic learning flow (guiding, not spoon-feeding)",
+      "Dynamic code execution environment helper",
+      "On-demand math formula visualizer",
+      "Progressive difficulty adjustment based on student performance"
+    ],
+    "integrations": ["Slack", "Discord", "Supabase", "Google Sheets"],
+    "stats": "32% Improvement in Test Scores"
+  },
+  {
+    "id": "video-pipeline",
+    "name": "Video Content Pipeline Agent",
+    "category": "Marketing",
+    "description": "Converts long-form blogs or transcripts into short-form video scripts and visual briefs.",
+    "longDescription": "Accelerate your video production pipeline. This agent takes links, articles, or transcripts, extracts the most engaging hooks and talking points, writes detailed scripts optimized for TikTok/Reels, generates AI image prompts, and outputs timing notes for video editors.",
+    "icon": "Video",
+    "price": "$159/mo",
+    "rating": 4.8,
+    "features": [
+      "Semantic summary extraction of long-form audio/text",
+      "TikTok/Shorts viral editing structure generator",
+      "Detailed voice-over and visual asset brief writer",
+      "Export directly to video editors or project boards"
+    ],
+    "integrations": ["YouTube API", "Notion", "Trello", "Google Drive", "n8n"],
+    "stats": "4.5x Faster Video Turnaround"
+  },
+  {
+    "id": "admissions-bot",
+    "name": "Admissions Bot",
+    "category": "Sales",
+    "description": "Guides prospective students through curriculum details, tuition info, and enrollment steps.",
+    "longDescription": "Deployable on university, boot camp, or private school websites. It answers complex course detail inquiries, checks applicant prerequisites, schedules advisory calls, and guides prospective students through submitting their documents and application status checking.",
+    "icon": "Bot",
+    "price": "$189/mo",
+    "rating": 4.8,
+    "features": [
+      "FAQ answering on tuition, curriculum, and life on campus",
+      "Real-time cohort start date and seating checks",
+      "Document upload checking and validation guide",
+      "Auto-sync with CRM databases"
+    ],
+    "integrations": ["Supabase", "Calendly", "Salesforce", "Google Sheets", "WhatsApp"],
+    "stats": "42% Enrollment Rate Increase"
+  }
+]

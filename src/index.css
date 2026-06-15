@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #0A0A0F;
+  --color-brand-purple: #7C3AED;
+  --color-brand-pink: #A855F7;
+  --color-brand-light: #C084FC;
+  --color-brand-violet: #4C1D95;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  
+  --shadow-glow: 0 0 25px rgba(124, 58, 237, 0.25);
+  --shadow-glow-strong: 0 0 40px rgba(124, 58, 237, 0.45);
+}
+
+@layer base {
+  body {
+    background-color: #0A0A0F;
+    color: #f1f5f9; /* slate-100 */
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+}
+
+/* Custom CSS utilities for high-end feel */
+
+/* Subtle grid overlay */
+.grid-overlay {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(124, 58, 237, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+}
+
+/* Radial light glows for backgrounds */
+.glow-purple-blur {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(76, 29, 149, 0.02) 60%, transparent 100%);
+}
+
+.glow-pink-blur {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, rgba(192, 132, 252, 0.01) 50%, transparent 100%);
+}
+
+/* Glassmorphism cards */
+.glass-panel {
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.2);
+  border-radius: 9999px;
+  border: 2px solid #0A0A0F;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.4);
+}
+
+/* Keyframes for glowing animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+/* Gradient borders on hover */
+.gradient-border-wrap {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  z-index: 1;
+}
+
+.gradient-border-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+.gradient-border-wrap:hover::before {
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #C084FC 100%);
+}
+
+/* Define the keyframe animations for the interactive logo */
+@keyframes pulseGlowLogo {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(147, 51, 234, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.8)) drop-shadow(0 0 35px rgba(59, 130, 246, 0.6));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(147, 51, 234, 0.4));
+  }
+}
+
+.interactive-loading-logo {
+  animation: pulseGlowLogo 2.5s ease-in-out infinite;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.interactive-loading-logo:hover {
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* 1. Global Scale & Root Typography */
+:root {
+  /* Increase base font size so rem units scale up proportionally */
+  font-size: 18px; /* Standard is usually 16px */
+  
+  /* Scale up layout constraints */
+  --max-width-container: 1280px; /* Increased from standard 1140px or 1200px */
+  
+  /* Increase padding/margin scales */
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 7rem; 
+}
+
+/* 2. Enhanced Typography Hierarchy */
+@layer base {
+  h1 {
+    font-size: 3.5rem; /* Bigger, bolder hero text */
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.75rem;
+    line-height: 1.4;
+  }
+
+  p, li, span {
+    font-size: 1.125rem; /* Boosts body text readability */
+    line-height: 1.65;    /* Gives text blocks more breathing room */
+  }
+}
+
+/* 3. Layout and Container Adjustments */
+.container {
+  max-width: var(--max-width-container);
+  width: 90%;
+  margin: 0 auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+/* Increase vertical padding between sections */
+section {
+  padding-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+}
+
+/* Increase gaps in grids or flex layouts (like your 3-column pricing or agent grids) */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Increased min-width from 280px */
+  gap: 2.5rem; /* More space between cards */
+}
+
+/* 4. Interactive Elements (Buttons & Inputs) */
+.btn, .input-field {
+  padding: 1rem 2rem; /* Thicker, more substantial touch targets */
+  font-size: 1.1rem;
+}
+
+/* 5. Cinematic Additions */
+@keyframes blobMorph {
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}
+
+.animate-blob-morph {
+  animation: blobMorph 20s ease-in-out infinite alternate;
+}
+
+@keyframes scanBeam {
+  0% { transform: translateX(-150%) rotate(-35deg); }
+  100% { transform: translateX(250%) rotate(-35deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes eyePulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255,0,200,0.5)); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-eye-pulse {
+  animation: eyePulse 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}

@@ -1,0 +1,21 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#7C3AED" />
+      <stop offset="50%" stopColor="#A855F7" />
+      <stop offset="100%" stopColor="#C084FC" />
+    </linearGradient>
+    <linearGradient id="favGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#4C1D95" />
+      <stop offset="100%" stopColor="#7C3AED" />
+    </linearGradient>
+  </defs>
+  <path
+    d="M 35 75 C 20 75, 15 55, 30 45 C 40 40, 55 45, 65 35 C 75 25, 65 15, 50 15 C 35 15, 25 25, 25 35 L 15 35 C 15 15, 30 5, 50 5 C 75 5, 85 25, 75 45 C 65 55, 50 50, 40 55 C 30 60, 30 65, 45 65 L 75 65 C 80 65, 85 75, 75 85 C 65 95, 40 95, 25 85 L 35 75"
+    fill="url(#favGradDark)"
+  />
+  <path
+    d="M 50 5 C 75 5, 85 20, 80 35 C 75 45, 60 45, 55 50 C 45 58, 55 70, 70 70 C 85 70, 85 55, 85 50 L 95 50 C 95 65, 85 80, 70 80 C 45 80, 35 60, 45 50 C 55 40, 65 40, 70 30 C 75 20, 65 15, 50 15 C 35 15, 30 25, 30 35 L 20 35 C 20 15, 30 5, 50 5 Z"
+    fill="url(#favGrad)"
+  />
+</svg>
