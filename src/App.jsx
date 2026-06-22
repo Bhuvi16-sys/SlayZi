@@ -146,7 +146,7 @@ function Preloader({ onComplete }) {
           animate={isLoaded ? { scale: [1, 1.05, 1], rotate: [0, 2, -2, 0] } : {}}
           transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
         >
-          <LogoIcon className="h-32 w-32 interactive-loading-logo ring-4 ring-white/10 rounded-2xl bg-white/95 p-3 shadow-[0_0_50px_rgba(159,41,255,0.3)]" />
+          <LogoIcon className="h-32 w-32 interactive-loading-logo ring-4 ring-white/10 rounded-full bg-white/95 p-3.5 shadow-[0_0_50px_rgba(159,41,255,0.3)]" />
         </motion.div>
 
         {/* Loading Progress & Enter Button Container */}
@@ -185,7 +185,7 @@ function Preloader({ onComplete }) {
                 {/* Glowing Launch Button */}
                 <button
                   onClick={handleLaunch}
-                  className="w-full py-4 px-8 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink text-white font-display font-bold tracking-[0.15em] text-sm uppercase shadow-[0_0_30px_rgba(124,58,237,0.4)] hover:shadow-[0_0_50px_rgba(168,85,247,0.7)] border border-white/20 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group"
+                  className="w-full py-4 px-8 rounded-full bg-black/40 hover:bg-brand-purple/20 backdrop-blur-md text-white font-display font-bold tracking-[0.18em] text-xs uppercase shadow-[0_0_25px_rgba(124,58,237,0.2)] hover:shadow-[0_0_40px_rgba(168,85,247,0.45)] border border-brand-purple/30 hover:border-brand-light/60 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-500 cursor-pointer flex items-center justify-center gap-2.5 group"
                 >
                   Launch experience
                   <svg
