@@ -1,128 +1,110 @@
 [
   {
-    "id": "lead-gen",
-    "name": "Lead Generation Agent",
+    "id": "lead-inquiry",
+    "name": "Lead & Inquiry Agent",
     "category": "Sales",
-    "description": "Scrapes, qualifies, and engages prospects across LinkedIn and email 24/7.",
-    "longDescription": "This autonomous outbound engine locates high-value prospects, runs hyper-personalized email campaigns, qualifies inbound leads, and books them directly onto your sales calendar. It learns your value proposition and matches it to prospect profiles dynamically.",
+    "description": "Responds to every inbound inquiry — WhatsApp, web form, call — within seconds. Qualifies, answers FAQs, and books calls.",
+    "longDescription": "This agent qualifying outbound and inbound inquiries in seconds rather than hours. It engages leads across WhatsApp, web forms, or phone, answer frequently asked questions based on your custom business data, schedules calls/visits directly onto your sales calendar, and hands off qualified leads.",
     "icon": "Users",
-    "price": "$149/mo",
+    "price": "Custom / Pilot",
     "rating": 4.9,
     "features": [
-      "Auto-scrape LinkedIn profiles based on ICP parameters",
-      "Dynamic email personalization using social signals",
-      "Lead scoring and intent verification",
-      "Direct integration with Calendly, HubSpot, and CRM pipelines"
+      "Qualifies inbound inquiries instantly 24/7",
+      "Engages leads across WhatsApp, web forms, and voice lines",
+      "Answers business FAQs accurately without human delay",
+      "Schedules meetings directly to calendars (Calendly, HubSpot, etc.)"
     ],
-    "integrations": ["LinkedIn", "Hubspot", "n8n", "Google Sheets", "Gmail"],
-    "stats": "5.2x Higher Reply Rate"
+    "integrations": ["WhatsApp Business", "HubSpot", "n8n", "Google Sheets", "Gmail"],
+    "stats": "Response under 5 seconds"
   },
   {
-    "id": "marketing-pro",
-    "name": "Social Media Marketing Agent",
-    "category": "Marketing",
-    "description": "Writes, schedules, and optimizes viral content across Twitter, LinkedIn, and Threads.",
-    "longDescription": "An all-in-one social growth marketer that monitors industry trends, extracts insights, writes engaging threads and posts in your brand voice, schedules them for peak engagement times, and automatically replies to early comments to boost reach.",
-    "icon": "Megaphone",
-    "price": "$129/mo",
+    "id": "support-doubt",
+    "name": "Customer Support & Doubt-Resolution Agent",
+    "category": "Support",
+    "description": "24/7 assistant trained on your knowledge base — answers customer questions accurately and escalates when needed.",
+    "longDescription": "Deploy a human-grade support assistant trained entirely on your business documents, workflows, and FAQs. It handles repetitive product or doubt-solving queries instantly, retains conversational context, and seamlessly escalates complex requests to your human support team.",
+    "icon": "MessageSquare",
+    "price": "Custom / Pilot",
+    "rating": 4.9,
+    "features": [
+      "24/7 instant replies with full context retention",
+      "Trained on your specific knowledge base & business data",
+      "Multi-lingual support for global customers",
+      "Automated human escalation protocols (Zendesk, Slack)"
+    ],
+    "integrations": ["WhatsApp Business", "Supabase", "Shopify", "Zendesk", "n8n"],
+    "stats": "85%+ Automated Resolution"
+  },
+  {
+    "id": "document-workflow",
+    "name": "Document & Workflow Automation Agent",
+    "category": "Operations",
+    "description": "Checks, scores, and processes documents at scale — homework, applications, claims, and paperwork.",
+    "longDescription": "An agent that checks, grades, and processes paperwork at scale. It scans handwriting or documents (homework, application forms, claims, receipts), matches them against logic rubrics, generates feedback, and updates your CRM or school portal.",
+    "icon": "FileCheck",
+    "price": "Custom / Pilot",
     "rating": 4.8,
     "features": [
-      "Trend analysis and automatic topic generation",
-      "Content optimization using viral Hook frameworks",
-      "Interactive reply automation and sentiment analysis",
-      "Monthly comprehensive analytics & growth insights"
+      "High-accuracy OCR for document and handwriting scanning",
+      "Auto-checks and grades according to custom rubrics",
+      "Generates immediate structured feedback for applicants/students",
+      "Auto-syncs scores and data to backend systems"
     ],
-    "integrations": ["Twitter API", "Buffer", "Supabase", "ChatGPT", "n8n"],
-    "stats": "240% Increase in Impressions"
+    "integrations": ["Google Workspace", "Canvas LMS", "Supabase", "n8n"],
+    "stats": "95% Review Time Saved"
   },
   {
-    "id": "whatsapp-support",
-    "name": "WhatsApp Support Agent",
-    "category": "Support",
-    "description": "Instantly resolves customer queries, processes returns, and recommends products.",
-    "longDescription": "Provide human-grade support directly in the world's most popular messaging app. This agent answers complex product questions, tracks shipping, initiates returns, and offers personalized up-sells, routing only critical tickets to your human support team.",
-    "icon": "MessageSquare",
-    "price": "$199/mo",
-    "rating": 4.9,
+    "id": "content-marketing",
+    "name": "Content & Marketing Automation Agent",
+    "category": "Marketing",
+    "description": "Turns raw content (lectures, calls, product descriptions) into ready-to-publish social material on autopilot.",
+    "longDescription": "Scale your content output without scaling your marketing team. This agent processes raw recordings (lectures, podcast episodes, sales calls) and converts them into ready-to-publish shorts, reels, posts, and captions, keeping your channels active on autopilot.",
+    "icon": "Video",
+    "price": "Custom / Pilot",
+    "rating": 4.8,
     "features": [
-      "24/7 instant replies with context retention",
-      "Order lookups and live shipping tracking",
-      "Multi-lingual support for 45+ languages",
-      "Escalation hooks to Zendesk, Slack, or Intercom"
+      "Extracts engaging short clips from long-form video or audio",
+      "Generates context-rich captions and platform-specific hashtags",
+      "Learns and replicates your unique brand voice",
+      "Auto-schedules publications to social media boards"
     ],
-    "integrations": ["WhatsApp Business", "Supabase", "Shopify", "Stripe", "n8n"],
-    "stats": "84% First-Contact Resolution"
+    "integrations": ["YouTube API", "Buffer", "Notion", "Google Drive", "n8n"],
+    "stats": "10x Content Production"
   },
   {
-    "id": "homework-checker",
-    "name": "Homework Checker Agent",
-    "category": "Education",
-    "description": "Scans assignments, gives constructive feedback, and tracks grades.",
-    "longDescription": "Designed for teachers and educational platforms, this agent analyzes uploaded documents or handwriting, matches them against answer sheets or open-ended rubrics, highlights conceptual errors, and provides detailed feedback and scoring in seconds.",
-    "icon": "FileCheck",
-    "price": "$79/mo",
+    "id": "outbound-followup",
+    "name": "Outbound & Follow-Up Agent",
+    "category": "Outbound",
+    "description": "Automated outreach for follow-ups, reminders, and re-engagement via voice or WhatsApp.",
+    "longDescription": "An outbound engine built to re-engage past prospects, chase invoice reminders, and execute follow-ups. Designed to speak/write naturally, adhere strictly to guidelines, and log all interaction details back to your main database.",
+    "icon": "PhoneCall",
+    "price": "Custom / Pilot",
     "rating": 4.7,
     "features": [
-      "High-accuracy OCR for handwritten assignment scanning",
-      "Step-by-step mathematical and logic verification",
-      "Personalized feedback summaries for students",
-      "Auto-export scores and notes to school portals"
+      "Automates Conversational outreach over WhatsApp or Twilio voice",
+      "Handles appointment reminders and invoice follow-ups",
+      "Ensures strict script compliance and logging",
+      "Updates CRM status based on call results"
     ],
-    "integrations": ["Canvas LMS", "Google Workspace", "Supabase", "n8n"],
-    "stats": "92% Grading Time Saved"
+    "integrations": ["Twilio Voice", "WhatsApp Business", "Supabase", "CRM Pipelines"],
+    "stats": "98% Outreach Success"
   },
   {
-    "id": "doubt-solving-tutor",
-    "name": "Doubt-Solving AI Tutor",
-    "category": "Education",
-    "description": "Patient, 24/7 academic tutor explaining STEM concepts through interactive dialogues.",
-    "longDescription": "An adaptive tutor that explains complex concepts (physics, math, coding, chemistry) dynamically. Rather than just giving answers, it guides students using the Socratic method, generating visual aids and quizzes to verify comprehension.",
-    "icon": "GraduationCap",
-    "price": "$99/mo",
-    "rating": 4.9,
-    "features": [
-      "Socratic learning flow (guiding, not spoon-feeding)",
-      "Dynamic code execution environment helper",
-      "On-demand math formula visualizer",
-      "Progressive difficulty adjustment based on student performance"
-    ],
-    "integrations": ["Slack", "Discord", "Supabase", "Google Sheets"],
-    "stats": "32% Improvement in Test Scores"
-  },
-  {
-    "id": "video-pipeline",
-    "name": "Video Content Pipeline Agent",
-    "category": "Marketing",
-    "description": "Converts long-form blogs or transcripts into short-form video scripts and visual briefs.",
-    "longDescription": "Accelerate your video production pipeline. This agent takes links, articles, or transcripts, extracts the most engaging hooks and talking points, writes detailed scripts optimized for TikTok/Reels, generates AI image prompts, and outputs timing notes for video editors.",
-    "icon": "Video",
-    "price": "$159/mo",
-    "rating": 4.8,
-    "features": [
-      "Semantic summary extraction of long-form audio/text",
-      "TikTok/Shorts viral editing structure generator",
-      "Detailed voice-over and visual asset brief writer",
-      "Export directly to video editors or project boards"
-    ],
-    "integrations": ["YouTube API", "Notion", "Trello", "Google Drive", "n8n"],
-    "stats": "4.5x Faster Video Turnaround"
-  },
-  {
-    "id": "admissions-bot",
-    "name": "Admissions Bot",
-    "category": "Sales",
-    "description": "Guides prospective students through curriculum details, tuition info, and enrollment steps.",
-    "longDescription": "Deployable on university, boot camp, or private school websites. It answers complex course detail inquiries, checks applicant prerequisites, schedules advisory calls, and guides prospective students through submitting their documents and application status checking.",
+    "id": "custom-agent",
+    "name": "Custom Dedicated Agent",
+    "category": "Custom",
+    "description": "Scope, build, and deploy a dedicated agent for your custom, repetitive, rule-based-but-judgment-requiring tasks.",
+    "longDescription": "If it is repetitive, rules-based, but requires some judgment, we will scope it, construct it in a sandbox, and deploy it to your systems. Includes founder-led delivery and a free pilot period before you pay.",
     "icon": "Bot",
-    "price": "$189/mo",
-    "rating": 4.8,
+    "price": "Custom Pricing",
+    "rating": 5.0,
     "features": [
-      "FAQ answering on tuition, curriculum, and life on campus",
-      "Real-time cohort start date and seating checks",
-      "Document upload checking and validation guide",
-      "Auto-sync with CRM databases"
+      "Discovery audit of your manual workflows",
+      "Tailor-made model logic and API integrations",
+      "Pilot trial on actual production workflows before payment",
+      "Dedicated monitoring and ongoing performance tuning"
     ],
-    "integrations": ["Supabase", "Calendly", "Salesforce", "Google Sheets", "WhatsApp"],
-    "stats": "42% Enrollment Rate Increase"
+    "integrations": ["Custom Webhooks", "API Integrations", "All Major Databases"],
+    "stats": "100% Tailored to Your Stack"
   }
 ]

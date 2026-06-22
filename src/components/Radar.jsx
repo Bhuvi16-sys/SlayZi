@@ -29,59 +29,79 @@ uniform float uTime;
 uniform vec3 uResolution;
 uniform float uSpeed;
 uniform float uScale;
-uniform float uRingCount;
-uniform float uSpokeCount;
-uniform float uRingThickness;
-uniform float uSpokeThickness;
-uniform float uSweepSpeed;
-uniform float uSweepWidth;
-uniform float uSweepLobes;
 uniform vec3 uColor;
 uniform vec3 uBgColor;
-uniform float uFalloff;
-uniform float uBrightness;
 uniform vec2 uMouse;
 uniform float uMouseInfluence;
 uniform bool uEnableMouse;
 
-#define TAU 6.28318530718
 #define PI 3.14159265359
 
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
 void main() {
-  vec2 st = gl_FragCoord.xy / uResolution.xy;
-  st = st * 2.0 - 1.0;
-  st.x *= uResolution.x / uResolution.y;
+  vec2 uv = gl_FragCoord.xy / uResolution.xy;
+  vec2 p = uv * 2.0 - 1.0;
+  p.x *= uResolution.x / uResolution.y;
 
   if (uEnableMouse) {
-    vec2 mShift = (uMouse * 2.0 - 1.0);
-    mShift.x *= uResolution.x / uResolution.y;
-    st -= mShift * uMouseInfluence;
+    vec2 m = uMouse * 2.0 - 1.0;
+    m.x *= uResolution.x / uResolution.y;
+    p -= m * uMouseInfluence * 0.4;
   }
 
-  st *= uScale;
+  float r = length(p) * uScale * 1.5;
+  float a = atan(p.y, p.x);
+  float t = uTime * uSpeed * 0.8;
 
-  float dist = length(st);
-  float theta = atan(st.y, st.x);
-  float t = uTime * uSpeed;
+  // 3D Logarithmic grid tunnel coordinates
+  float tunnelZ = 1.0 / (r + 0.001);
+  float tunnelAngle = a / (2.0 * PI) + 0.5;
 
-  float ringPhase = dist * uRingCount - t;
-  float ringDist = abs(fract(ringPhase) - 0.5);
-  float ringGlow = 1.0 - smoothstep(0.0, uRingThickness, ringDist);
+  vec2 gridUv = vec2(tunnelZ + t * 2.5, tunnelAngle * 12.0);
+  vec2 ip = floor(gridUv);
+  vec2 fp = fract(gridUv);
 
-  float spokeAngle = abs(fract(theta * uSpokeCount / TAU + 0.5) - 0.5) * TAU / uSpokeCount;
-  float arcDist = spokeAngle * dist;
-  float spokeGlow = (1.0 - smoothstep(0.0, uSpokeThickness, arcDist)) * smoothstep(0.0, 0.1, dist);
+  // Digital mesh pattern
+  float gridLines = smoothstep(0.12, 0.0, abs(fp.x - 0.5)) + 
+                    smoothstep(0.12, 0.0, abs(fp.y - 0.5));
+  gridLines *= smoothstep(0.15, 1.4, r); // Fade center out
 
-  float sweepPhase = t * uSweepSpeed;
-  float sweepBeam = pow(max(0.5 * sin(uSweepLobes * theta + sweepPhase) + 0.5, 0.0), uSweepWidth);
+  // High speed radial light particles/packets
+  float stream = 0.0;
+  for (int i = 0; i < 6; i++) {
+    float id = float(i);
+    float angleOffset = hash(vec2(id, 28.3)) * 2.0 * PI;
+    float speedMult = hash(vec2(id, 82.7)) * 1.2 + 0.6;
+    float beamActive = step(0.65, hash(vec2(floor(t * speedMult + id), id)));
+    
+    float diff = abs(sin(a - angleOffset));
+    if (diff < 0.12 && beamActive > 0.0) {
+      float pulse = fract(t * speedMult + r * 0.6);
+      stream += (1.0 - smoothstep(0.0, 0.12, diff)) * 
+                (1.0 - smoothstep(0.0, 0.35, abs(pulse - 0.5))) * 
+                smoothstep(0.1, 1.2, r);
+    }
+  }
 
-  float fade = smoothstep(1.05, 0.85, dist) * pow(max(1.0 - dist, 0.0), uFalloff);
+  // Pulsing central Core
+  float coreGlow = exp(-r * 4.5) * 2.5;
 
-  float intensity = max((ringGlow + spokeGlow + sweepBeam) * fade * uBrightness, 0.0);
-  vec3 col = uColor * intensity + uBgColor;
+  // Concentric data rings pulsing outward
+  float ring = smoothstep(0.06, 0.0, abs(r - (0.55 + sin(t * 3.0) * 0.08)));
 
-  float alpha = clamp(length(col), 0.0, 1.0);
-  gl_FragColor = vec4(col, alpha);
+  float finalIntensity = (gridLines * 0.45 + stream * 0.95 + ring * 0.5) * smoothstep(1.8, 0.1, r) + coreGlow;
+  
+  // Custom neon cyber palette shifts dynamically
+  vec3 neonColor = mix(uColor, vec3(0.9, 0.1, 0.6), sin(a * 4.0 + t * 1.5) * 0.5 + 0.5);
+  vec3 col = neonColor * finalIntensity + uBgColor;
+
+  float vignette = smoothstep(2.5, 0.7, length(p));
+  col *= vignette;
+
+  gl_FragColor = vec4(col, clamp(length(col), 0.0, 1.0));
 }
 `;
 

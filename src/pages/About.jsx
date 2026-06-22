@@ -7,24 +7,24 @@ import { MagneticButton } from "../components/MagneticButton";
 export default function About() {
   const timelineEvents = [
     {
-      year: "2024",
-      title: "The Genesis",
-      description: "Slayzi was founded in San Francisco by a small team of database and AI engineers who grew tired of standard, rigid SaaS APIs. The goal: create fluid, autonomous agent workforces.",
+      year: "Late 2024",
+      title: "First Admissions Automation",
+      description: "We built our first custom automation system for Saraswati Vidyamandir in Ambala, resolving CBSE admissions inquiries instantly day and night to prevent missed enrollments.",
     },
     {
       year: "Early 2025",
-      title: "Agent SDK & Custom CRM integration",
-      description: "We launched the Slayzi SDK, letting developers code customized agent templates. We deployed our first 15 bespoke CRM systems for early-stage logistics and support tech companies.",
+      title: "Full CBSE Operations Layer",
+      description: "Expanded the system into a complete AI operations layer: automated CBSE homework check-scoring, a 24/7 Socratic WhatsApp tutor, and lecture editing systems.",
     },
     {
       year: "Late 2025",
-      title: "Launch of the AI Marketplace",
-      description: "We opened the modular Slayzi Marketplace, allowing non-technical operators to browse, configure, and boot agents instantly. Reached 50+ active client platforms in two months.",
+      title: "Generalizing Slayzi Modules",
+      description: "Packaged the proven SVM codebase into ready-to-deploy modular templates tailored for other sectors like Real Estate, Lending, and Outbound campaigns.",
     },
     {
       year: "2026",
-      title: "Orchestration & Beyond",
-      description: "Released Slayzi Hub, connecting multiple agents together in workflow loops. Now supporting WhatsApp routing, localized LLM configurations, and enterprise SLAs.",
+      title: "Founder-Led Scale Operations",
+      description: "Slayzi is officially launched, delivering direct, founder-led integrations and zero-risk pilot trials to fast-growing businesses looking to automate the busywork.",
     },
   ];
 
@@ -41,10 +41,10 @@ export default function About() {
           Our Mission
         </div>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white max-w-2xl leading-tight">
-          Ready to Automate the Boring Work
+          We Build AI Operations, Not Generic Chatbots
         </h1>
-        <p className="text-slate-400 text-sm max-w-xl">
-          Slayzi was built to bridge the gap between complex artificial intelligence models and daily business tools. We build AI workers that execute tasks, not templates.
+        <p className="text-slate-400 text-sm max-w-xl text-center">
+          Slayzi was created to remove the wall of manual, repetitive work that fast-growing businesses face, delivering actual production code that works while you sleep.
         </p>
       </div>
 
@@ -54,9 +54,9 @@ export default function About() {
           <div className="w-12 h-12 rounded-xl bg-brand-purple/10 border border-brand-purple/20 text-brand-light flex items-center justify-center mb-5">
             <Target className="h-6 w-6" />
           </div>
-          <h3 className="text-base font-bold text-white mb-2 font-display">Hyper-Specialization</h3>
+          <h3 className="text-base font-bold text-white mb-2 font-display">Trained on Your Data</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
-            We don't build generic chat prompts. Our agents do one job—like qualifying a lead or checking grade scores—with extreme accuracy.
+            We don't sell generic templates. Every agent we deploy is trained directly on your files, knowledge base, customers, and active workflows.
           </p>
         </div>
 
@@ -64,9 +64,9 @@ export default function About() {
           <div className="w-12 h-12 rounded-xl bg-brand-purple/10 border border-brand-purple/20 text-brand-light flex items-center justify-center mb-5">
             <Users className="h-6 w-6" />
           </div>
-          <h3 className="text-base font-bold text-white mb-2 font-display">Deep System Integration</h3>
+          <h3 className="text-base font-bold text-white mb-2 font-display">Founder-Led Delivery</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
-            An agent is only as good as its connections. We build seamless hooks to WhatsApp, Supabase, n8n, Stripe, and legacy corporate CRMs.
+            You deal directly with the developers programming your AI workflows. No intermediate account executives or sales layers blocking development.
           </p>
         </div>
 
@@ -74,9 +74,9 @@ export default function About() {
           <div className="w-12 h-12 rounded-xl bg-brand-purple/10 border border-brand-purple/20 text-brand-light flex items-center justify-center mb-5">
             <Award className="h-6 w-6" />
           </div>
-          <h3 className="text-base font-bold text-white mb-2 font-display">Secure & Compliant</h3>
+          <h3 className="text-base font-bold text-white mb-2 font-display">Proven in Production</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
-            Data safety is paramount. Slayzi uses end-to-end sandbox routing, isolated runtime containers, and conforms with rigorous compliance guidelines.
+            We are not showcasing mockups or prototypes. Our agents run live in production daily, handling real customers, students, and files.
           </p>
         </div>
       </div>
@@ -87,13 +87,13 @@ export default function About() {
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-4">The Slayzi Story</h2>
           <div className="flex flex-col gap-4 text-slate-300 text-sm leading-relaxed">
             <p>
-              In late 2024, our founders were designing integration architectures for growing enterprise companies. They realized that every company had a mountain of tasks that standard workflows couldn't handle—tasks requiring semantic understanding and contextual choices.
+              In late 2024, we started by solving a very real problem for our reference client, <strong>Saraswati Vidyamandir</strong>, a CBSE coaching institute in Ambala. What began as a single WhatsApp inquiry responder quickly grew into a full AI operations layer.
             </p>
             <p>
-              The solution wasn't another heavy CRM dashboard or another rigid spreadsheet script. It was a fluid AI agent that could act like an autonomous teammate: picking up tasks, running checks in external tools, replying instantly in natural language, and asking for human validation only when unsure.
+              We watched the institute's staff get buried in hours of manual paperwork daily—answering the same admissions questions, guiding student doubt-solving, grading CBSE homework, and trying to edit classroom clips for marketing.
             </p>
             <p>
-              We founded Slayzi to make AI agents accessible to every operator. We handle the model hosting, logic orchestration, security containment, and api hooks, leaving you with one dashboard showing tasks solved.
+              By training custom agents directly on their curriculum and processes, we automated the repetitive 80% of their operational burden. Today, those systems handle admissions, tutoring, and grading live every single day with zero manual staff effort. That proof is what drives Slayzi as we build for businesses in real estate, lending, and operations.
             </p>
           </div>
         </div>
@@ -102,13 +102,13 @@ export default function About() {
         <div className="md:col-span-5">
           <div className="glass-panel p-8 rounded-2xl border border-brand-purple/30 relative overflow-hidden bg-gradient-to-tr from-[#140D2B] via-[#0A0A0F] to-[#0D0D18]">
             <div className="absolute -top-10 -right-10 w-32 h-32 glow-purple-blur rounded-full opacity-40 pointer-events-none" />
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-light font-display">Quote from leadership</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-light font-display">Operations Principle</span>
             <blockquote className="text-white italic text-base leading-relaxed my-4">
-              "We measure our success in hours returned to builders. When you automate the tedious workflows, you unlock real human creative momentum."
+              "We don't pitch slides; we deploy real workers. When you remove the daily busywork, you give your team the time to actually scale the business."
             </blockquote>
             <div className="border-t border-white/5 pt-4 text-xs">
               <div className="font-bold text-white">Slayzi Founders</div>
-              <div className="text-slate-400">San Francisco, CA</div>
+              <div className="text-slate-400">Ambala, Haryana</div>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function About() {
 
       {/* Timeline Section */}
       <div className="mb-24 relative z-10">
-        <h2 className="text-2xl sm:text-3xl font-display font-bold text-white text-center mb-16">Our Growth Timeline</h2>
+        <h2 className="text-2xl sm:text-3xl font-display font-bold text-white text-center mb-16">Our Journey</h2>
 
         <div className="relative border-l border-brand-purple/20 pl-8 ml-4 flex flex-col gap-12">
           {timelineEvents.map((event, index) => (
@@ -148,18 +148,18 @@ export default function About() {
       {/* CTA Box */}
       <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 border border-white/5 text-center flex flex-col items-center justify-center gap-6 glass-panel">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 glow-purple-blur opacity-25 rounded-full" />
-        <h3 className="text-2xl font-bold text-white font-display relative z-10">We Are Growing</h3>
+        <h3 className="text-2xl font-bold text-white font-display relative z-10">Ready to Remove the Wall?</h3>
         <p className="text-slate-300 text-sm max-w-md mx-auto relative z-10">
-          Want to shape the future of autonomous workflows? Slayzi is hiring AI solutions engineers and full-stack API developers.
+          Book a 15-minute demo and watch a custom-built Slayzi agent operate live. Start your free pilot period today.
         </p>
-        <div className="flex flex-wrap gap-4 relative z-10">
+        <div className="flex flex-wrap gap-4 relative z-10 justify-center">
           <Link to="/custom">
             <MagneticButton className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink text-white font-semibold text-xs shadow-glow">
-              Get Started
+              Book a Demo
             </MagneticButton>
           </Link>
-          <a href="#" className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 flex items-center gap-1.5">
-            View Careers
+          <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-semibold text-white hover:bg-white/10 flex items-center gap-1.5">
+            WhatsApp Us
             <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
