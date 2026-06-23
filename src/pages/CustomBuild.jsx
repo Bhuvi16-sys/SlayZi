@@ -52,7 +52,7 @@ export default function CustomBuild() {
     {
       step: "03",
       title: "Sandbox Construction",
-      description: "We configure the agents, connect integrations (n8n, Supabase, WhatsApp, etc.), and perform rigorous scenario trials.",
+      description: "We configure the agents, connect integrations (n8n, Firebase, WhatsApp, etc.), and perform rigorous scenario trials.",
     },
     {
       step: "04",

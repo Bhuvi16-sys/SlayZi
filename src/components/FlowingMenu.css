@@ -88,11 +88,10 @@
 }
 
 .marquee__img {
-  width: 200px;
+  width: 120px;
   height: 7vh;
-  margin: 2em 2vw;
-  padding: 1em 0;
-  border-radius: 50px;
-  background-size: cover;
-  background-position: 50% 50%;
+  margin: 0 2vw;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }

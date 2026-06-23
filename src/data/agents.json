@@ -32,7 +32,7 @@
       "Multi-lingual support for global customers",
       "Automated human escalation protocols (Zendesk, Slack)"
     ],
-    "integrations": ["WhatsApp Business", "Supabase", "Shopify", "Zendesk", "n8n"],
+    "integrations": ["WhatsApp Business", "Firebase", "Shopify", "Zendesk", "n8n"],
     "stats": "85%+ Automated Resolution"
   },
   {
@@ -50,7 +50,7 @@
       "Generates immediate structured feedback for applicants/students",
       "Auto-syncs scores and data to backend systems"
     ],
-    "integrations": ["Google Workspace", "Canvas LMS", "Supabase", "n8n"],
+    "integrations": ["Google Workspace", "Canvas LMS", "Firebase", "n8n"],
     "stats": "95% Review Time Saved"
   },
   {
@@ -86,7 +86,7 @@
       "Ensures strict script compliance and logging",
       "Updates CRM status based on call results"
     ],
-    "integrations": ["Twilio Voice", "WhatsApp Business", "Supabase", "CRM Pipelines"],
+    "integrations": ["Twilio Voice", "WhatsApp Business", "Firebase", "CRM Pipelines"],
     "stats": "98% Outreach Success"
   },
   {

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Marketplace from "./pages/Marketplace";
 import CustomBuild from "./pages/CustomBuild";
 import About from "./pages/About";
-import Logo, { LogoIcon } from "./components/Logo";
+import { LogoIcon } from "./components/Logo";
 import Radar from "./components/Radar";
 
 // Utility Component: Resets scroll state on navigation
@@ -116,11 +116,11 @@ function Preloader({ onComplete }) {
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden select-none"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      initial={{ clipPath: "circle(150% at 50% 50%)" }}
+      exit={{ clipPath: "circle(0% at 50% 50%)" }}
+      transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
     >
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <Radar
           speed={1.0}
           scale={0.5}
@@ -138,15 +138,46 @@ function Preloader({ onComplete }) {
           enableMouseInteraction={true}
           mouseInfluence={0.1}
         />
+
+        {/* Interactive Radar Matrix: Concentric CSS radial background rings */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-25">
+          <motion.div
+            animate={{ rotate: 360, scale: [1, 1.04, 1] }}
+            transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
+            className="absolute w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full border border-brand-purple/20"
+          />
+          <motion.div
+            animate={{ rotate: -360, scale: [1, 0.96, 1] }}
+            transition={{ repeat: Infinity, duration: 45, ease: "linear" }}
+            className="absolute w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full border border-brand-pink/15"
+          />
+          <motion.div
+            animate={{ rotate: 360, scale: [1, 1.06, 1] }}
+            transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+            className="absolute w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] rounded-full border border-brand-light/10"
+          />
+        </div>
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center gap-12 pointer-events-auto px-6 max-w-md w-full">
         {/* Animated logo/icon wrapper */}
         <motion.div
-          animate={isLoaded ? { scale: [1, 1.05, 1], rotate: [0, 2, -2, 0] } : {}}
-          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={isLoaded 
+            ? { 
+                opacity: 1,
+                scale: [1, 1.03, 1], 
+                boxShadow: ["0 0 30px rgba(159,41,255,0.2)", "0 0 60px rgba(159,41,255,0.5)", "0 0 30px rgba(159,41,255,0.2)"] 
+              } 
+            : { opacity: 1, scale: 1 }
+          }
+          transition={isLoaded ? { repeat: Infinity, duration: 3, ease: "easeInOut" } : { duration: 0.5 }}
+          className="relative"
         >
-          <LogoIcon className="h-32 w-32 interactive-loading-logo ring-4 ring-white/10 rounded-full bg-white/95 p-3.5 shadow-[0_0_50px_rgba(159,41,255,0.3)]" />
+          {/* Cyberpunk Outer Ring Aura */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand-purple to-brand-pink blur-md opacity-40 animate-pulse" />
+          
+          <LogoIcon className="relative h-32 w-32 interactive-loading-logo border border-white/10 rounded-full bg-[#09090E]/60 backdrop-blur-md p-5 shadow-[0_0_50px_rgba(159,41,255,0.25)] text-white" />
         </motion.div>
 
         {/* Loading Progress & Enter Button Container */}
@@ -214,9 +245,30 @@ function Preloader({ onComplete }) {
 
 function AppContent() {
   const location = useLocation();
+  const { scrollYProgress } = useScroll();
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col min-h-screen relative bg-[#0A0A0F] text-white">
+      {/* Dynamic Cyberpunk AI Agent Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 grid-overlay opacity-30" />
+        
+        {/* Large glassmorphic glowing orbs with blur */}
+        <div className="absolute top-[10%] left-[5%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-tr from-brand-purple/10 to-brand-pink/5 blur-[120px] mix-blend-screen opacity-70 animate-pulse-glow" />
+        <div className="absolute bottom-[20%] right-[5%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-brand-violet/10 to-brand-light/5 blur-[140px] mix-blend-screen opacity-50 animate-pulse-glow" style={{ animationDelay: "-4s" }} />
+        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[35vw] h-[35vw] rounded-full bg-brand-pink/5 blur-[100px] mix-blend-screen opacity-40 animate-pulse-glow" style={{ animationDelay: "-2s" }} />
+        
+        {/* Ambient grid alignment visual cues (horizontal and vertical subtle lines) */}
+        <div className="absolute top-1/4 right-[15%] w-[1px] h-[35vh] bg-gradient-to-b from-brand-purple/20 via-brand-pink/10 to-transparent blur-[0.5px]" />
+        <div className="absolute bottom-1/3 left-[15%] w-[1px] h-[30vh] bg-gradient-to-t from-brand-pink/15 via-brand-purple/5 to-transparent blur-[0.5px]" />
+        <div className="absolute top-1/2 left-[5%] right-[5%] h-[1px] bg-gradient-to-r from-transparent via-brand-purple/10 to-transparent blur-[0.5px]" />
+      </div>
+
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-purple via-brand-pink to-brand-light z-[110] origin-[0%]"
+        style={{ scaleX: scrollYProgress }}
+      />
       {/* Scroll Reset */}
       <ScrollToTop />
       

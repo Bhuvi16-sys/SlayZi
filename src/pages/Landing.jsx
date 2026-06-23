@@ -1,79 +1,277 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import * as Icons from "lucide-react";
-import Tilt from "react-parallax-tilt";
-import { MagneticButton } from "../components/MagneticButton";
 import AnimatedCounter from "../components/AnimatedCounter";
-import agentsData from "../data/agents.json";
+import { fetchLandingConfig } from "../utils/api";
 import FlowingMenu from "../components/FlowingMenu";
 import HeroParticles from "../components/HeroParticles";
 import TypewriterText from "../components/TypewriterText";
-import TextPressure from "../components/TextPressure";
 import ShinyText from "../components/ShinyText";
 import RobotStack from "../components/RobotStack";
 import { LogoIcon } from "../components/Logo";
 
-// Dynamic Icon Resolver
-function AgentIcon({ name, className = "h-6 w-6" }) {
-  const IconComponent = Icons[name] || Icons.Bot;
-  return <IconComponent className={className} />;
+
+
+
+
+const sectionFadeIn = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
+const gridContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { y: 25, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 100, damping: 15 }
+  }
+};
+
+
+
+function PricingCardSkeleton() {
+  return (
+    <div className="glass-panel flex flex-col p-8 rounded-3xl border border-white/5 bg-[#0A0A0F]/50 text-left h-[450px] animate-pulse">
+      <div className="h-5 w-24 bg-white/5 rounded mb-3" />
+      <div className="h-10 w-32 bg-white/5 rounded mb-3" />
+      <div className="h-4 w-full bg-white/5 rounded mb-6" />
+      <div className="space-y-3 mb-8">
+        <div className="h-4 w-full bg-white/5 rounded" />
+        <div className="h-4 w-5/6 bg-white/5 rounded" />
+        <div className="h-4 w-4/5 bg-white/5 rounded" />
+      </div>
+      <div className="h-12 w-full bg-white/5 rounded mt-auto" />
+    </div>
+  );
 }
 
-function extractPercentage(stats) {
-  const pctMatch = stats.match(/(\d+)%/);
-  if (pctMatch) return Math.min(100, parseInt(pctMatch[1], 10));
-  const xMatch = stats.match(/([\d.]+)\s*x/i);
-  if (xMatch) return Math.min(100, 30 + parseFloat(xMatch[1]) * 10);
-  return 75;
+function FeatureCardSkeleton() {
+  return (
+    <div className="glass-panel p-6 rounded-2xl border border-white/5 bg-[#0A0A0F]/50 text-left h-[200px] animate-pulse flex flex-col justify-between">
+      <div className="w-12 h-12 bg-white/5 rounded-xl mb-4" />
+      <div className="space-y-2 flex-grow">
+        <div className="h-5 w-1/3 bg-white/5 rounded" />
+        <div className="h-4 w-full bg-white/5 rounded" />
+        <div className="h-4 w-5/6 bg-white/5 rounded" />
+      </div>
+    </div>
+  );
 }
+
+const demoChats = {
+  admissions: [
+    { sender: "user", text: "Hi, I'm looking to enroll my son in Class 10 at Saraswati Vidyamandir. What are the criteria?" },
+    { sender: "agent", text: "Hi there! 📚 For Class 10 CBSE enrollment at Saraswati Vidyamandir, we look at the Class 9 report card and require a basic aptitude assessment in Math & Science. Would you like me to schedule a campus visit or send the registration form via WhatsApp?" },
+    { sender: "user", text: "Yes, please send the registration form." },
+    { sender: "agent", text: "Perfect! I've sent the enrollment link to your number. I also scheduled an automated follow-up for tomorrow. Let me know if you need help with documents! 📝" }
+  ],
+  tutor: [
+    { sender: "user", text: "Can you explain how Rayleigh scattering makes the sky blue? I'm preparing for the CBSE physics exam." },
+    { sender: "agent", text: "Absolutely! ☀️ Sunlight contains all colors. When it hits the Earth's atmosphere, the gases scatter the light. Blue light has shorter wavelengths and scatters much more than red light. That's Rayleigh scattering! Ready for a quick practice question?" },
+    { sender: "user", text: "Sure, ask me." },
+    { sender: "agent", text: "Great! Why does the sun look reddish-orange at sunset if blue scatters more? Think about the distance light travels through the atmosphere. 🌅" }
+  ],
+  leads: [
+    { sender: "user", text: "Is the 3BHK villa at Green Meadows still available? I saw it on your real estate listing." },
+    { sender: "agent", text: "Yes, it is! 🏡 Green Meadows Villa #14 is available for listing price $240k. It has 3 bedrooms, an open terrace, and automated solar panels. Would you like me to book a site-visit this Saturday at 11 AM?" },
+    { sender: "user", text: "Yes, 11 AM works for me." },
+    { sender: "agent", text: "Awesome! I have blocked Saturday at 11 AM for your visit. Our agent Rohini will meet you there. I have pinged you the Google Maps location. 📍" }
+  ]
+};
 
 export default function Landing() {
   const [activeTab, setActiveTab] = useState("admissions");
   const [chatMessages, setChatMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("All");
   const [inputText, setInputText] = useState("");
-  const [sessionId, setSessionId] = useState("");
-
-  // Refs for scrolling
-  const caseStudyRef = useRef(null);
-  const demoRef = useRef(null);
-
-  useEffect(() => {
+  const [sessionId] = useState(() => {
     let storedSessionId = localStorage.getItem("n8nSessionId");
     if (!storedSessionId) {
       storedSessionId = Math.random().toString(36).substring(2, 15);
       localStorage.setItem("n8nSessionId", storedSessionId);
     }
-    setSessionId(storedSessionId);
+    return storedSessionId;
+  });
+
+  // Dynamic async datasets
+  const [systemFeatures, setSystemFeatures] = useState([]);
+  const [pricingTiers, setPricingTiers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Refs for scrolling
+  const caseStudyRef = useRef(null);
+  const demoRef = useRef(null);
+  const howItWorksRef = useRef(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const categories = ["All", ...new Set(agentsData.map(a => a.category))];
-  const filteredAgents = activeCategory === "All" ? agentsData : agentsData.filter(a => a.category === activeCategory);
+  const { scrollYProgress } = useScroll({
+    target: howItWorksRef,
+    offset: ["start end", "end end"]
+  });
 
-  // Simulated conversations representing Saraswati Vidyamandir & other Slayzi agents
-  const demoChats = {
-    admissions: [
-      { sender: "user", text: "Hi, I'm looking to enroll my son in Class 10 at Saraswati Vidyamandir. What are the criteria?" },
-      { sender: "agent", text: "Hi there! 📚 For Class 10 CBSE enrollment at Saraswati Vidyamandir, we look at the Class 9 report card and require a basic aptitude assessment in Math & Science. Would you like me to schedule a campus visit or send the registration form via WhatsApp?" },
-      { sender: "user", text: "Yes, please send the registration form." },
-      { sender: "agent", text: "Perfect! I've sent the enrollment link to your number. I also scheduled an automated follow-up for tomorrow. Let me know if you need help with documents! 📝" }
-    ],
-    tutor: [
-      { sender: "user", text: "Can you explain how Rayleigh scattering makes the sky blue? I'm preparing for the CBSE physics exam." },
-      { sender: "agent", text: "Absolutely! ☀️ Sunlight contains all colors. When it hits the Earth's atmosphere, the gases scatter the light. Blue light has shorter wavelengths and scatters much more than red light. That's Rayleigh scattering! Ready for a quick practice question?" },
-      { sender: "user", text: "Sure, ask me." },
-      { sender: "agent", text: "Great! Why does the sun look reddish-orange at sunset if blue scatters more? Think about the distance light travels through the atmosphere. 🌅" }
-    ],
-    leads: [
-      { sender: "user", text: "Is the 3BHK villa at Green Meadows still available? I saw it on your real estate listing." },
-      { sender: "agent", text: "Yes, it is! 🏡 Green Meadows Villa #14 is available for listing price $240k. It has 3 bedrooms, an open terrace, and automated solar panels. Would you like me to book a site-visit this Saturday at 11 AM?" },
-      { sender: "user", text: "Yes, 11 AM works for me." },
-      { sender: "agent", text: "Awesome! I have blocked Saturday at 11 AM for your visit. Our agent Rohini will meet you there. I have pinged you the Google Maps location. 📍" }
-    ]
+  const orbTop = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  const leftContentVariants = {
+    hidden: { x: isMobile ? 30 : -50, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
   };
+
+  const rightContentVariants = {
+    hidden: { x: 30, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
+  const badgeVariants = {
+    hidden: {
+      scale: 0.9,
+      opacity: 0.3,
+      boxShadow: "0 0 0px rgba(168, 85, 247, 0)"
+    },
+    visible: {
+      scale: 1.1,
+      opacity: 1,
+      boxShadow: "0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(236, 72, 153, 0.4)",
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
+  const timelineContainerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.45
+      }
+    }
+  };
+
+  const stepRowVariants = {
+    hidden: {},
+    visible: {}
+  };
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await fetchLandingConfig();
+        setSystemFeatures(data.features || []);
+        setPricingTiers(data.pricing || []);
+      } catch (error) {
+        console.warn("Dynamic config fetch failed, falling back to local JSON assets:", error);
+        
+        // Fallbacks
+        setSystemFeatures([
+          {
+            id: "autonomous-ops",
+            title: "Autonomous Operations",
+            description: "Self-correcting workflows linking your CRMs, custom databases, and communication lines on autopilot.",
+            icon: "Cpu",
+            badge: "Core Engine"
+          },
+          {
+            id: "whatsapp-tutor",
+            title: "Context-Aware Memory",
+            description: "Agents retain conversation context over days, allowing natural follow-ups and Socratic learning sessions.",
+            icon: "MessageSquare",
+            badge: "Conversational"
+          },
+          {
+            id: "handwriting-ocr",
+            title: "Handwriting OCR & Grading",
+            description: "Read handwritten worksheets or scanned applications, analyze against rubrics, and feedback in real-time.",
+            icon: "FileCheck",
+            badge: "Vision AI"
+          },
+          {
+            id: "outbound-voice",
+            title: "Natural Voice Synthesizer",
+            description: "Execute outbound collection reminders or warm-lead follow-ups using naturally paced voice generators.",
+            icon: "PhoneCall",
+            badge: "Voice Runtimes"
+          }
+        ]);
+        setPricingTiers([
+          {
+            tier: "Sandbox Pilot",
+            price: "Free / 14 Days",
+            description: "Test-drive custom-tailored model logic on your live production data with zero risk.",
+            inclusions: [
+              "Custom agent design & prompts",
+              "WhatsApp / Web sandbox access",
+              "Founder-led operational audit",
+              "Basic performance logs"
+            ],
+            highlighted: false
+          },
+          {
+            tier: "Operations Growth",
+            price: "$499/mo",
+            description: "Scale customer engagement and document processing with dedicated cloud runtimes.",
+            inclusions: [
+              "1 Dedicated Production Agent",
+              "WhatsApp API & Twilio connections",
+              "Bi-weekly logic & context tuning",
+              "CRM database sync & webhooks",
+              "Standard Email & Slack support"
+            ],
+            highlighted: true
+          },
+          {
+            tier: "Enterprise Orchestrator",
+            price: "Custom",
+            description: "Uncapped automated operations layer for high-volume service delivery.",
+            inclusions: [
+              "Unlimited Custom Agents",
+              "Private LLM fine-tuning & gateways",
+              "SLA-backed performance runtime",
+              "Dedicated Support Engineer",
+              "On-prem DB gateways"
+            ],
+            highlighted: false
+          }
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
+
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
@@ -114,34 +312,21 @@ export default function Landing() {
 
   // Setup initial chat message from tab
   useEffect(() => {
-    setChatMessages([
-      { sender: "agent", text: "Hello! I am one of Slayzi's custom AI agents. Try chatting with me below to test our operation flows." },
-      ...demoChats[activeTab]
-    ]);
-    setIsTyping(false);
+    const timer = setTimeout(() => {
+      setChatMessages([
+        { sender: "agent", text: "Hello! I am one of Slayzi's custom AI agents. Try chatting with me below to test our operation flows." },
+        ...demoChats[activeTab]
+      ]);
+      setIsTyping(false);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [activeTab]);
 
   const scrollToSection = (ref) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Framer Motion Animation Variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
-  };
 
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100, damping: 15 }
-    }
-  };
 
   return (
     <div className="relative min-h-screen pt-20 overflow-hidden">
@@ -169,7 +354,7 @@ export default function Landing() {
               className="inline-flex items-center self-start gap-3.5 p-2 pr-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-brand-purple/40 shadow-[0_0_20px_rgba(124,58,237,0.05)] hover:shadow-[0_0_30px_rgba(124,58,237,0.2)] transition-all duration-300 cursor-pointer group"
             >
               <div className="relative flex items-center justify-center">
-                <LogoIcon className="h-9 w-9 rounded-xl bg-white p-0.5 border border-white/15" />
+                <LogoIcon className="h-9 w-9 rounded-full border border-white/10 bg-[#09090E]/60 backdrop-blur-md" />
                 <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -271,7 +456,13 @@ export default function Landing() {
       </section>
 
       {/* 3. THE PROBLEM WE SOLVE */}
-      <section className="relative py-24 px-6 max-w-7xl mx-auto z-10">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 max-w-7xl mx-auto z-10"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 flex flex-col gap-6 text-left">
             <div className="px-3 py-1 rounded-full bg-red-500/20 border border-red-500/20 text-red-400 text-xs font-semibold uppercase tracking-wider self-start">
@@ -315,125 +506,83 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* 4. WHAT SLAYZI SELLS (CORE CATEGORIES) */}
-      <section className="relative py-24 px-6 bg-[#08080C] border-y border-white/5 z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center flex flex-col items-center gap-4 mb-16">
-            <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
-              What We Sell
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white max-w-2xl leading-tight">
-              Ready-to-Deploy Custom Modules
-            </h2>
-            <p className="text-slate-400 text-sm max-w-xl">
-              We sell custom-built AI agents, packaged as ready-to-deploy modules and tailored per business. Explore our core categories:
-            </p>
+      {/* NEW SYSTEM FEATURES SECTION */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 max-w-7xl mx-auto z-10"
+      >
+        <div className="text-center flex flex-col items-center gap-4 mb-16">
+          <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
+            Capabilities
           </div>
-
-          {/* Category Filters */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer ${
-                  activeCategory === category
-                    ? "bg-brand-purple text-white shadow-glow"
-                    : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/5"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence mode="popLayout">
-              {filteredAgents.map((agent) => (
-                <Tilt key={agent.id} tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glarePosition="all" className="h-full">
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3 }}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = e.clientX - rect.left;
-                      const y = e.clientY - rect.top;
-                      e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
-                      e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
-                    }}
-                    className="gradient-border-wrap flex flex-col p-6 h-full text-left bg-[#0A0A0F] shadow-lg group relative overflow-hidden"
-                  >
-                    <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0" style={{ background: 'radial-gradient(circle 300px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(124, 58, 237, 0.15), transparent 80%)' }} />
-
-                    <div className="flex justify-between items-start mb-6 relative z-10">
-                      <div className="p-3 bg-brand-purple/10 text-brand-light rounded-lg border border-brand-purple/20 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-all duration-300">
-                        <AgentIcon name={agent.icon} className="h-6 w-6" />
-                      </div>
-                      <span className="text-[10px] font-bold tracking-widest bg-brand-violet/40 text-brand-light px-2 py-0.5 rounded border border-brand-purple/20 uppercase">
-                        {agent.category}
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg font-bold text-white mb-2 font-display relative z-10">{agent.name}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow relative z-10">{agent.description}</p>
-
-                    <div className="bg-white/5 border border-white/5 rounded-lg p-3 mb-6 relative z-10 overflow-hidden">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-slate-500">Benchmark Metric</span>
-                        <span className="text-xs font-bold text-brand-light">{agent.stats}</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${extractPercentage(agent.stats)}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-                          className="h-full bg-gradient-to-r from-brand-violet to-brand-light rounded-full"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-white/5 relative z-10">
-                      <div className="flex items-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        <span className="text-xs font-semibold text-slate-300">{agent.price}</span>
-                      </div>
-                      <button
-                        onClick={() => setSelectedAgent(agent)}
-                        className="px-4 py-2 rounded-lg bg-white/5 hover:bg-brand-purple text-white text-xs font-semibold border border-white/10 hover:border-brand-purple transition-all duration-300 flex items-center gap-1 group/btn cursor-pointer"
-                      >
-                        View Details
-                        <Icons.ArrowRight className="h-3 w-3 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all duration-300" />
-                      </button>
-                    </div>
-                  </motion.div>
-                </Tilt>
-              ))}
-            </AnimatePresence>
-          </div>
-
-          <div className="mt-12 text-center">
-            <Link to="/custom">
-              <MagneticButton className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold border border-white/10 shadow-lg flex items-center gap-2 mx-auto group">
-                Scope a Custom Agent Build
-                <Icons.ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </MagneticButton>
-            </Link>
-          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white max-w-2xl leading-tight">
+            Engineered for Enterprise Scale
+          </h2>
+          <p className="text-slate-400 text-sm max-w-xl">
+            Custom-built AI runtimes designed to slide into your operations without altering your stack.
+          </p>
         </div>
-      </section>
+
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div 
+              key="features-skeleton"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {[1, 2, 3, 4].map(n => <FeatureCardSkeleton key={n} />)}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="features-grid"
+              variants={gridContainerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {systemFeatures.map(feat => {
+                const FeatIcon = Icons[feat.icon] || Icons.Cpu;
+                return (
+                  <motion.div
+                    key={feat.id}
+                    variants={cardVariants}
+                    className="glass-panel p-6 rounded-2xl border border-white/5 hover:border-brand-purple/35 transition-all duration-300 text-left bg-gradient-to-b from-[#0A0A0F] to-[#120F1C]/40 group relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-brand-purple/5 rounded-full blur-2xl group-hover:bg-brand-purple/10 transition-all duration-500" />
+                    <div className="w-12 h-12 bg-brand-purple/10 border border-brand-purple/20 text-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-colors">
+                      <FeatIcon className="h-6 w-6" />
+                    </div>
+                    <span className="text-[9px] font-bold tracking-widest text-brand-light uppercase bg-brand-violet/20 border border-brand-purple/20 px-2 py-0.5 rounded mb-3 inline-block">
+                      {feat.badge}
+                    </span>
+                    <h3 className="text-base font-bold text-white mb-2 font-display">{feat.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{feat.description}</p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.section>
+
+
 
       {/* 5. HOW IT WORKS */}
-      <section className="relative py-24 px-6 max-w-5xl mx-auto z-10">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 max-w-5xl mx-auto z-10"
+      >
         <div className="text-center flex flex-col items-center gap-4 mb-20">
           <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
             Process
@@ -446,73 +595,120 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="relative">
+        <motion.div 
+          ref={howItWorksRef} 
+          variants={timelineContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="relative"
+        >
+          {/* Base Track Line */}
           <div className="absolute left-4 sm:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-brand-purple via-brand-pink to-brand-light opacity-30 transform -translate-x-1/2" />
 
+          {/* Glowing Orb */}
+          <motion.div
+            style={{ top: orbTop }}
+            className="absolute left-4 sm:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink shadow-[0_0_15px_#a855f7,0_0_30px_#ec4899] z-30 pointer-events-none"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+
           {/* Step 1 */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
-            <div className="sm:text-right flex flex-col items-start sm:items-end justify-center pl-10 sm:pl-0 sm:pr-12 text-left">
+          <motion.div variants={stepRowVariants} className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
+            <motion.div 
+              variants={leftContentVariants}
+              className="sm:text-right flex flex-col items-start sm:items-end justify-center pl-10 sm:pl-0 sm:pr-12 text-left"
+            >
               <div className="text-xs font-bold text-brand-light uppercase tracking-wider mb-2">Step 1</div>
               <h3 className="text-xl font-bold text-white mb-2 font-display">Discover</h3>
               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
                 We audit and map your business's repetitive workflows, locating where an AI agent delivers the fastest, highest-impact operations win.
               </p>
-            </div>
-            <div className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white shadow-glow">
+            </motion.div>
+            <motion.div 
+              variants={badgeVariants}
+              className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white font-display"
+            >
               1
-            </div>
+            </motion.div>
             <div className="hidden sm:block" />
-          </div>
+          </motion.div>
 
           {/* Step 2 */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
+          <motion.div variants={stepRowVariants} className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
             <div className="hidden sm:block" />
-            <div className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white shadow-glow">
+            <motion.div 
+              variants={badgeVariants}
+              className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white font-display"
+            >
               2
-            </div>
-            <div className="flex flex-col items-start justify-center pl-10 sm:pl-12 text-left">
+            </motion.div>
+            <motion.div 
+              variants={rightContentVariants}
+              className="flex flex-col items-start justify-center pl-10 sm:pl-12 text-left"
+            >
               <div className="text-xs font-bold text-brand-light uppercase tracking-wider mb-2">Step 2</div>
               <h3 className="text-xl font-bold text-white mb-2 font-display">Build</h3>
               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
                 We build and train the agent using your actual data, databases, and processes — not a generic chatbot prompt template.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Step 3 */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
-            <div className="sm:text-right flex flex-col items-start sm:items-end justify-center pl-10 sm:pl-0 sm:pr-12 text-left">
+          <motion.div variants={stepRowVariants} className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16">
+            <motion.div 
+              variants={leftContentVariants}
+              className="sm:text-right flex flex-col items-start sm:items-end justify-center pl-10 sm:pl-0 sm:pr-12 text-left"
+            >
               <div className="text-xs font-bold text-brand-light uppercase tracking-wider mb-2">Step 3</div>
               <h3 className="text-xl font-bold text-white mb-2 font-display">Pilot</h3>
               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
                 A free, low-risk pilot period executing on actual daily business workflows, so you can measure real value before committing.
               </p>
-            </div>
-            <div className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white shadow-glow">
+            </motion.div>
+            <motion.div 
+              variants={badgeVariants}
+              className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white font-display"
+            >
               3
-            </div>
+            </motion.div>
             <div className="hidden sm:block" />
-          </div>
+          </motion.div>
 
           {/* Step 4 */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <motion.div variants={stepRowVariants} className="relative grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div className="hidden sm:block" />
-            <div className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white shadow-glow animate-pulse">
+            <motion.div 
+              variants={badgeVariants}
+              className="absolute left-4 sm:left-1/2 top-0 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink p-0.5 border border-black z-20 flex items-center justify-center text-xs font-bold text-white font-display"
+            >
               4
-            </div>
-            <div className="flex flex-col items-start justify-center pl-10 sm:pl-12 text-left">
+            </motion.div>
+            <motion.div 
+              variants={rightContentVariants}
+              className="flex flex-col items-start justify-center pl-10 sm:pl-12 text-left"
+            >
               <div className="text-xs font-bold text-brand-light uppercase tracking-wider mb-2">Step 4</div>
               <h3 className="text-xl font-bold text-white mb-2 font-display">Deploy & Scale</h3>
               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
                 Once proven, the agent goes live permanently on your stack with continuous optimization updates and developer oversight.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* 6. PROOF, NOT PROMISES (CASE STUDY) */}
-      <section ref={caseStudyRef} className="relative py-24 px-6 bg-[#06060A] border-y border-white/5 z-10 overflow-hidden">
+      <motion.section 
+        ref={caseStudyRef}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 bg-[#06060A] border-y border-white/5 z-10 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] glow-purple-blur opacity-20 pointer-events-none rounded-full" />
         
         <div className="max-w-6xl mx-auto flex flex-col gap-16">
@@ -598,10 +794,16 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 7. INDUSTRIES WE SERVE */}
-      <section className="relative py-24 px-6 max-w-7xl mx-auto z-10">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 max-w-7xl mx-auto z-10"
+      >
         <div className="text-center flex flex-col items-center gap-4 mb-16">
           <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
             Sectors
@@ -654,10 +856,16 @@ export default function Landing() {
             <span className="text-[10px] text-brand-light font-bold uppercase tracking-wider">Secure & Compliant Logs</span>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 8. WHY SLAYZI */}
-      <section className="relative py-24 px-6 bg-[#08080C] border-y border-white/5 z-10">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 bg-[#08080C] border-y border-white/5 z-10"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center flex flex-col items-center gap-4 mb-16">
             <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
@@ -698,10 +906,18 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 9. INTERACTIVE DEMO & CHAT SIMULATION */}
-      <section ref={demoRef} id="demo" className="relative py-24 px-6 z-10 overflow-hidden">
+      <motion.section 
+        ref={demoRef}
+        id="demo"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 z-10 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] glow-purple-blur opacity-30 pointer-events-none rounded-full" />
         
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -860,10 +1076,16 @@ export default function Landing() {
             </form>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 10. INTEGRATIONS FLOATING BAR */}
-      <section className="relative py-24 px-0 bg-[#120F17] border-t border-white/5 z-10 overflow-hidden">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-0 bg-[#120F17] border-t border-white/5 z-10 overflow-hidden"
+      >
         <div className="text-center flex flex-col items-center gap-4 mb-12 px-6">
           <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
             Integrations
@@ -875,17 +1097,109 @@ export default function Landing() {
         <div style={{ height: '600px', position: 'relative' }}>
           <FlowingMenu 
             items={[
-              { link: '#', text: 'WhatsApp Business', image: 'https://picsum.photos/600/400?random=1' },
-              { link: '#', text: 'HubSpot CRM', image: 'https://picsum.photos/600/400?random=2' },
-              { link: '#', text: 'n8n Automation', image: 'https://picsum.photos/600/400?random=3' },
-              { link: '#', text: 'Supabase DB', image: 'https://picsum.photos/600/400?random=4' }
+              { link: '#', text: 'WhatsApp Business', image: 'https://cdn.simpleicons.org/whatsapp/25D366' },
+              { link: '#', text: 'HubSpot CRM', image: 'https://cdn.simpleicons.org/hubspot/FF7A59' },
+              { link: '#', text: 'n8n Automation', image: 'https://cdn.simpleicons.org/n8n/FF6C37' },
+              { link: '#', text: 'Firebase DB', image: 'https://cdn.simpleicons.org/firebase/FFCA28' }
             ]}
           />
         </div>
-      </section>
+      </motion.section>
+
+      {/* NEW PRICING SECTION */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-24 px-6 max-w-7xl mx-auto z-10"
+      >
+        <div className="text-center flex flex-col items-center gap-4 mb-16">
+          <div className="px-3 py-1 rounded-full bg-brand-violet/20 border border-brand-purple/20 text-brand-light text-xs font-semibold uppercase tracking-wider">
+            Pricing
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white max-w-2xl leading-tight">
+            Transparent, Value-First Rates
+          </h2>
+          <p className="text-slate-400 text-sm max-w-xl">
+            Audit work scopes, pilot live in production, and upgrade once value is established.
+          </p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div 
+              key="pricing-skeleton"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            >
+              {[1, 2, 3].map(n => <PricingCardSkeleton key={n} />)}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="pricing-grid"
+              variants={gridContainerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            >
+              {pricingTiers.map((tier, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={cardVariants}
+                  className={`glass-panel p-8 rounded-3xl border flex flex-col relative text-left transition-all duration-300 ${
+                    tier.highlighted 
+                      ? "border-brand-purple bg-gradient-to-b from-[#1C0F32] via-[#0A0A0F] to-[#0A0A0F] shadow-[0_0_50px_rgba(159,41,255,0.15)] scale-105" 
+                      : "border-white/5 bg-gradient-to-b from-[#0A0A0F] to-[#0D0D14]"
+                  }`}
+                >
+                  {tier.highlighted && (
+                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink text-white text-[9px] font-bold tracking-widest uppercase shadow-glow">
+                      Recommended Plan
+                    </div>
+                  )}
+
+                  <h3 className="text-lg font-bold text-white mb-2 font-display">{tier.tier}</h3>
+                  <div className="flex items-baseline gap-1.5 mb-3">
+                    <span className="text-3xl font-black text-white font-display">{tier.price}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-6">{tier.description}</p>
+                  
+                  <div className="h-px bg-white/10 mb-6" />
+
+                  <ul className="space-y-3.5 mb-8">
+                    {tier.inclusions.map((inclusion, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-xs text-slate-300 font-sans">
+                        <Icons.Check className="h-4 w-4 text-brand-light shrink-0 mt-0.5" />
+                        <span>{inclusion}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => scrollToSection(demoRef)}
+                    className="w-full py-3 px-6 rounded-xl font-bold text-xs uppercase tracking-wider mt-auto cursor-pointer transition-all duration-300 bg-white/5 hover:bg-white/10 border border-white/10 text-white"
+                  >
+                    Select Plan & Scope Demo
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.section>
 
       {/* 11. CALL TO ACTION BANNER */}
-      <section className="relative py-28 px-6 max-w-7xl mx-auto z-10">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={sectionFadeIn}
+        className="relative py-28 px-6 max-w-7xl mx-auto z-10"
+      >
         <div className="relative rounded-3xl overflow-hidden p-8 sm:p-16 border border-brand-purple/30 text-center flex flex-col items-center justify-center gap-6 shadow-glow-strong">
           <div className="absolute inset-0 bg-gradient-to-r from-brand-violet via-[#140C29] to-brand-violet opacity-85 z-0" />
           <div className="absolute top-1/4 left-1/4 w-[200px] h-[200px] bg-brand-purple/20 blur-[100px] rounded-full animate-pulse-glow" />
@@ -923,95 +1237,9 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Agent Detail Modal */}
-      <AnimatePresence>
-        {selectedAgent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              transition={{ type: "spring", duration: 0.4 }}
-              className="w-full max-w-2xl bg-[#0F0F1A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative text-left"
-            >
-              <button
-                onClick={() => setSelectedAgent(null)}
-                className="absolute top-4 right-4 p-2 bg-white/5 border border-white/5 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer"
-              >
-                <Icons.X className="h-5 w-5" />
-              </button>
-
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3.5 bg-brand-purple/10 text-brand-light rounded-xl border border-brand-purple/20">
-                    <AgentIcon name={selectedAgent.icon} className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold tracking-widest text-brand-light uppercase border border-brand-purple/20 px-2 py-0.5 rounded bg-brand-violet/20">
-                      {selectedAgent.category}
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mt-1 font-display">{selectedAgent.name}</h3>
-                  </div>
-                </div>
-
-                <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                  {selectedAgent.longDescription}
-                </p>
-
-                <h4 className="text-sm font-bold text-white mb-3 uppercase tracking-wider font-display">Key Capabilities</h4>
-                <ul className="flex flex-col gap-3 text-xs text-slate-300 mb-6">
-                  {selectedAgent.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2.5 text-left">
-                      <Icons.CheckCircle2 className="h-4.5 w-4.5 text-brand-light shrink-0 mt-0.5" />
-                      <span className="leading-relaxed">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <h4 className="text-sm font-bold text-white mb-3 uppercase tracking-wider font-display">Integrations</h4>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {selectedAgent.integrations.map((item, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1.5 bg-white/5 border border-white/5 text-xs text-slate-300 rounded-lg flex items-center gap-1.5"
-                    >
-                      <Icons.Workflow className="h-3 w-3 text-brand-light" />
-                      {item}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                  <div>
-                    <span className="text-[11px] text-slate-500 uppercase tracking-wider block">Estimated Price</span>
-                    <span className="text-lg font-extrabold text-white font-display">{selectedAgent.price}</span>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setSelectedAgent(null)}
-                      className="px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-semibold border border-white/10 cursor-pointer"
-                    >
-                      Close
-                    </button>
-                    <Link to="/custom" onClick={() => setSelectedAgent(null)}>
-                      <button className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-brand-purple to-brand-pink text-white text-xs font-bold shadow-glow hover:shadow-glow-strong cursor-pointer">
-                        Configure This Agent
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Agent Detail Modal Removed */}
     </div>
   );
 }
