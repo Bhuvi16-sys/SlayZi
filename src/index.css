@@ -79,6 +79,15 @@
   background: rgba(124, 58, 237, 0.4);
 }
 
+/* Scrollbar hiding utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Keyframes for glowing animations */
 @keyframes pulseGlow {
   0%, 100% {
@@ -140,6 +149,12 @@
   }
 }
 
+/* Blend logo to remove white backgrounds in dark mode */
+.blend-logo {
+  filter: invert(1) hue-rotate(180deg) brightness(1.2) !important;
+  mix-blend-mode: screen !important;
+}
+
 .interactive-loading-logo {
   animation: pulseGlowLogo 2.5s ease-in-out infinite;
   transition: transform 0.3s ease;
@@ -165,6 +180,26 @@
   --spacing-xl: 7rem; 
 }
 
+@media (max-width: 1024px) {
+  :root {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 15px;
+    --spacing-xl: 5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 14px;
+    --spacing-xl: 3.5rem;
+  }
+}
+
 /* 2. Enhanced Typography Hierarchy */
 @layer base {
   h1 {
@@ -183,7 +218,7 @@
     line-height: 1.4;
   }
 
-  p, li, span {
+  p, li {
     font-size: 1.125rem; /* Boosts body text readability */
     line-height: 1.65;    /* Gives text blocks more breathing room */
   }

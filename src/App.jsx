@@ -7,6 +7,8 @@ import Landing from "./pages/Landing";
 import Marketplace from "./pages/Marketplace";
 import CustomBuild from "./pages/CustomBuild";
 import About from "./pages/About";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { LogoIcon } from "./components/Logo";
 import Radar from "./components/Radar";
 
@@ -104,10 +106,10 @@ function Preloader({ onComplete }) {
       console.warn("Web Audio API chime failed:", e);
     }
 
-    // 2. Play welcome.wav file (using HTML5 Audio API)
-    const audio = new Audio('/welcome.wav');
+    // 2. Play welcome chime (via ElevenLabs API with fallback to welcome.wav)
+    const audio = new Audio('/api/welcome-audio');
     audio.volume = 0.8;
-    audio.play().catch((err) => console.warn("welcome.wav playback blocked or failed:", err));
+    audio.play().catch((err) => console.warn("Welcome audio playback blocked or failed:", err));
 
     // 3. Complete preloader
     onComplete();
@@ -308,6 +310,22 @@ function AppContent() {
               element={
                 <PageTransition>
                   <About />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PageTransition>
+                  <Login />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PageTransition>
+                  <Register />
                 </PageTransition>
               }
             />

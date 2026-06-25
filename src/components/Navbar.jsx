@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import * as Icons from "lucide-react";
 import Logo from "./Logo";
 import { MagneticButton } from "./MagneticButton";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, profile, logout } = useAuth();
 
   const navLinks = [
     { label: "Home", link: "/" },
@@ -29,6 +31,18 @@ export default function Navbar() {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -71,6 +85,29 @@ export default function Navbar() {
 
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-4 relative z-10">
+            {user ? (
+              <div className="hidden md:flex items-center gap-4 animate-fade-in">
+                <span className="text-xs text-slate-300 font-medium font-display">
+                  Hi, {profile?.fullName?.split(" ")[0] || "User"}
+                </span>
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 rounded-full border border-white/5 bg-white/5 hover:bg-red-500/10 hover:border-red-500/20 text-xs font-bold text-slate-300 hover:text-red-400 transition-all cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="hidden md:block">
+                <Link
+                  to="/login"
+                  className="px-4.5 py-2.5 rounded-full border border-white/10 text-xs font-bold text-slate-300 hover:text-white transition-colors mr-1 hover:bg-white/5"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
+
             <div className="hidden md:block">
               <Link to="/custom" className="">
                 <MagneticButton className="px-5 py-2.5 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink text-white text-xs font-bold shadow-glow hover:shadow-glow-strong border border-white/10">
@@ -98,7 +135,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[90] bg-[#0A0A0F]/95 backdrop-blur-2xl md:hidden pt-24 px-6 flex flex-col"
+            className="fixed inset-0 z-[90] bg-[#0A0A0F]/95 backdrop-blur-2xl md:hidden pt-24 pb-8 px-6 flex flex-col overflow-y-auto"
           >
             <div className="flex flex-col gap-6 text-2xl font-display font-bold">
               {navLinks.map((item) => (
@@ -112,9 +149,33 @@ export default function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              <div className="h-px w-full bg-white/10 my-4" />
-              <Link to="/custom" className="">
-                <button className="w-full py-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink text-white text-lg font-bold shadow-glow border border-white/10">
+              <div className="h-px w-full bg-white/10 my-2" />
+              
+              {user ? (
+                <div className="flex flex-col gap-4 text-left">
+                  <div className="text-xs font-display text-slate-400 leading-none">
+                    Signed in as: <span className="text-white font-bold">{profile?.fullName || user.email}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-4 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-lg font-bold hover:bg-red-500/10 transition-colors cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link to="/login" className="w-full">
+                  <button className="w-full py-4 rounded-xl border border-white/10 bg-white/5 text-white text-lg font-bold hover:bg-white/10 transition-colors cursor-pointer">
+                    Sign In
+                  </button>
+                </Link>
+              )}
+
+              <Link to="/custom" className="w-full">
+                <button className="w-full py-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink text-white text-lg font-bold shadow-glow border border-white/10 cursor-pointer">
                   Book Custom Build
                 </button>
               </Link>

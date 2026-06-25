@@ -816,7 +816,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="glass-panel p-8 rounded-2xl border border-white/5 text-left flex flex-col justify-between">
             <div>
               <div className="w-12 h-12 bg-brand-purple/10 border border-brand-purple/20 text-brand-light rounded-xl flex items-center justify-center mb-6">
@@ -1094,7 +1094,7 @@ export default function Landing() {
             Seamless Stack Connections
           </h2>
         </div>
-        <div style={{ height: '600px', position: 'relative' }}>
+        <div className="h-[300px] sm:h-[400px] lg:h-[600px] relative">
           <FlowingMenu 
             items={[
               { link: '#', text: 'WhatsApp Business', image: 'https://cdn.simpleicons.org/whatsapp/25D366' },
@@ -1133,7 +1133,7 @@ export default function Landing() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto"
             >
               {[1, 2, 3].map(n => <PricingCardSkeleton key={n} />)}
             </motion.div>
@@ -1144,7 +1144,7 @@ export default function Landing() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto"
             >
               {pricingTiers.map((tier, idx) => (
                 <motion.div

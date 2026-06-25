@@ -16,6 +16,18 @@ export default function Marketplace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAgent, setSelectedAgent] = useState(null);
 
+  // Lock body scroll when agent modal is open
+  useEffect(() => {
+    if (selectedAgent) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedAgent]);
+
   const categories = ["All", "Sales", "Marketing", "Support", "Education", "Custom"];
 
   // Filter agents based on search text and category select
@@ -79,12 +91,12 @@ export default function Marketplace() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex flex-wrap md:flex-nowrap gap-2 bg-white/5 border border-white/5 p-1.5 rounded-xl items-center scrollbar-none overflow-x-auto">
+        <div className="flex flex-row flex-nowrap gap-2 bg-white/5 border border-white/5 p-1.5 rounded-xl items-center scrollbar-none overflow-x-auto w-full max-w-full">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold font-display whitespace-nowrap transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs font-bold font-display whitespace-nowrap shrink-0 transition-all ${
                 selectedCategory.toLowerCase() === cat.toLowerCase()
                   ? "bg-brand-purple text-white shadow-glow"
                   : "text-slate-400 hover:text-white"
@@ -196,7 +208,7 @@ export default function Marketplace() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/85 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-sm"
           >
             {/* Modal Box */}
             <motion.div
@@ -204,7 +216,7 @@ export default function Marketplace() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.4 }}
-              className="w-full max-w-2xl bg-[#0F0F1A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative text-left"
+              className="w-full max-w-2xl max-h-[90vh] bg-[#0F0F1A] border border-white/10 rounded-2xl overflow-y-auto shadow-2xl relative text-left scrollbar-none"
             >
               {/* Close Button */}
               <button
@@ -214,7 +226,7 @@ export default function Marketplace() {
                 <Icons.X className="h-5 w-5" />
               </button>
 
-              <div className="p-8">
+              <div className="p-5 sm:p-8">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="p-3.5 bg-brand-purple/10 text-brand-light rounded-xl border border-brand-purple/20">

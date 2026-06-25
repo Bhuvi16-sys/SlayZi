@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, FileText, CheckCircle2, User, Mail, Building, Briefcase, Zap, DollarSign } from "lucide-react";
+import { Send, FileText, CheckCircle2, User, Mail, Building, Briefcase, Zap, DollarSign, Lock, Loader2, AlertCircle } from "lucide-react";
 import agentsData from "../data/agents.json";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../utils/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function CustomBuild() {
   const [searchParams] = useSearchParams();
   const agentParam = searchParams.get("agent");
+  const { user, profile } = useAuth();
 
   // Form states
   const [businessName, setBusinessName] = useState("");
@@ -17,9 +21,20 @@ export default function CustomBuild() {
   const [email, setEmail] = useState("");
   const [selectedAgent, setSelectedAgent] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
   // Focus states for floating labels
   const [focusedInput, setFocusedInput] = useState("");
+
+  // Sync user profile details to form once authenticated
+  useEffect(() => {
+    if (user && profile) {
+      setFullName(profile.fullName || "");
+      setEmail(profile.email || "");
+      setBusinessName(profile.companyName || "");
+    }
+  }, [user, profile]);
 
   // Pre-fill agent from URL search param
   useEffect(() => {
@@ -32,10 +47,35 @@ export default function CustomBuild() {
     }
   }, [agentParam]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API request
-    setSubmitted(true);
+    if (!user) {
+      setFormError("You must sign in to submit a proposal.");
+      return;
+    }
+    setFormError("");
+    setFormLoading(true);
+    try {
+      const bookingData = {
+        userId: user.uid,
+        fullName,
+        email,
+        businessName,
+        businessType,
+        automationDetails,
+        selectedAgent: selectedAgent || "None",
+        budget,
+        status: "PENDING",
+        createdAt: new Date().toISOString()
+      };
+      await addDoc(collection(db, "bookings"), bookingData);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Firestore booking submit error:", err);
+      setFormError("An error occurred. Please try again.");
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   const processPhases = [
@@ -121,8 +161,42 @@ export default function CustomBuild() {
         {/* Right Side: Form Panel */}
         <div className="lg:col-span-7">
           <AnimatePresence mode="wait">
-            {!submitted ? (
+            {!user ? (
               <motion.div
+                key="auth-gate"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="glass-panel p-8 sm:p-12 rounded-2xl border border-white/5 text-center flex flex-col items-center justify-center relative overflow-hidden"
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 glow-purple-blur opacity-35 rounded-full" />
+                
+                <div className="w-16 h-16 rounded-full bg-brand-purple/10 border border-brand-purple/20 text-brand-light flex items-center justify-center mb-6 shadow-glow relative z-10">
+                  <Lock className="h-7 w-7" />
+                </div>
+
+                <h3 className="text-xl font-bold text-white mb-2 font-display relative z-10">Sign In Required</h3>
+                <p className="text-slate-400 text-xs max-w-xs mx-auto mb-8 leading-relaxed relative z-10">
+                  You must register an account and sign in to submit custom build proposals and request automation blueprints.
+                </p>
+
+                <div className="flex flex-wrap gap-4 relative z-10 justify-center">
+                  <Link to="/login?redirect=/custom">
+                    <button className="px-5 py-3 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink text-white font-bold text-xs shadow-glow hover:shadow-glow-strong border border-white/10 cursor-pointer">
+                      Sign In
+                    </button>
+                  </Link>
+                  <Link to="/register?redirect=/custom">
+                    <button className="px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-white/10 cursor-pointer">
+                      Create Account
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+            ) : !submitted ? (
+              <motion.div
+                key="form-panel"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -130,6 +204,13 @@ export default function CustomBuild() {
                 className="glass-panel p-8 sm:p-10 rounded-2xl border border-white/5 relative"
               >
                 <h3 className="text-xl font-bold text-white mb-6 font-display">Automation Specifications</h3>
+
+                {formError && (
+                  <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2.5 leading-relaxed animate-fade-in">
+                    <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
+                    <span>{formError}</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                   
@@ -236,7 +317,7 @@ export default function CustomBuild() {
                   {/* Budget Selector */}
                   <div>
                     <label className="text-xs text-slate-400 font-semibold mb-3 block uppercase tracking-wider">Estimated Budget Range</label>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {/* Budget 1 */}
                       <button
                         type="button"
@@ -284,10 +365,20 @@ export default function CustomBuild() {
                   {/* Submit button */}
                   <button
                     type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-brand-purple to-brand-pink text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-glow hover:shadow-glow-strong transition-all mt-4 cursor-pointer"
+                    disabled={formLoading}
+                    className="w-full py-4 bg-gradient-to-r from-brand-purple to-brand-pink text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-glow hover:shadow-glow-strong transition-all mt-4 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Submit Blueprint Proposal
-                    <Send className="h-4 w-4" />
+                    {formLoading ? (
+                      <>
+                        Submitting Proposal...
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        Submit Blueprint Proposal
+                        <Send className="h-4 w-4" />
+                      </>
+                    )}
                   </button>
 
                 </form>
